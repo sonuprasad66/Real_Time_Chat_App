@@ -1,5 +1,5 @@
 const bcrypt = require("bcrypt");
-const { userModel } = require("../models/User.model");
+const { userModel } = require("../Models/User.model");
 
 const login = async (req, res, next) => {
   try {
