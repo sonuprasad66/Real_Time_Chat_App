@@ -19,7 +19,7 @@ export default function Welcome() {
       <h1 style={{ textAlign: "center" }}>
         Welcome <span style={{ color: "#0078ff" }}> {userName}!</span>
       </h1>
-      <h3>to STACK BOX</h3>
+      <h3>to CHAT APP</h3>
     </Container>
   );
 }
