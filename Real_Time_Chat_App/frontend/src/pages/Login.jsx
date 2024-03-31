@@ -2,14 +2,16 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import styled from "styled-components";
 import { useNavigate, Link } from "react-router-dom";
-import Logo from "../assets/logo.svg";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { loginRoute } from "../utils/APIRoutes";
+import Spinner from "./Spinner";
 
 export default function Login() {
   const navigate = useNavigate();
   const [values, setValues] = useState({ username: "", password: "" });
+  const [isLoading, setIsLoading] = useState(false);
+
   const toastOptions = {
     position: "bottom-right",
     autoClose: 8000,
@@ -40,6 +42,7 @@ export default function Login() {
   };
 
   const handleSubmit = async (event) => {
+    setIsLoading(true);
     event.preventDefault();
     if (validateForm()) {
       const { username, password } = values;
@@ -48,9 +51,12 @@ export default function Login() {
         password,
       });
       if (data.status === false) {
+        setIsLoading(false);
+
         toast.error(data.msg, toastOptions);
       }
       if (data.status === true) {
+        setIsLoading(false);
         localStorage.setItem(
           process.env.REACT_APP_LOCALHOST_KEY,
           JSON.stringify(data.user)
@@ -58,6 +64,8 @@ export default function Login() {
 
         navigate("/");
       }
+    } else {
+      setIsLoading(false);
     }
   };
 
@@ -88,9 +96,18 @@ export default function Login() {
             name="password"
             onChange={(e) => handleChange(e)}
           />
-          <button type="submit">Log In</button>
+          <button
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+            type="submit"
+          >
+            {isLoading ? <Spinner /> : "Log In"}
+          </button>
           <span>
-            New to Chat ? <Link to="/register">Create Account.</Link>
+            New to Chat ? <Link to="/register">Create Account</Link>
           </span>
         </form>
       </FormContainer>

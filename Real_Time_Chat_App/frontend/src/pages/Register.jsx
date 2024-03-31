@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import styled from "styled-components";
 import { useNavigate, Link } from "react-router-dom";
-import Logo from "../assets/logo.svg";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { registerRoute } from "../utils/APIRoutes";
+import Spinner from "./Spinner";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -22,6 +22,8 @@ export default function Register() {
     password: "",
     confirmPassword: "",
   });
+
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)) {
@@ -63,6 +65,7 @@ export default function Register() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setIsLoading(true);
     if (handleValidation()) {
       const { email, username, password } = values;
       const { data } = await axios.post(registerRoute, {
@@ -72,15 +75,19 @@ export default function Register() {
       });
 
       if (data.status === false) {
+        setIsLoading(false);
         toast.error(data.msg, toastOptions);
       }
       if (data.status === true) {
+        setIsLoading(false);
         localStorage.setItem(
           process.env.REACT_APP_LOCALHOST_KEY,
           JSON.stringify(data.user)
         );
         navigate("/login");
       }
+    } else {
+      setIsLoading(false);
     }
   };
 
@@ -122,9 +129,18 @@ export default function Register() {
             name="confirmPassword"
             onChange={(e) => handleChange(e)}
           />
-          <button type="submit">Create User</button>
+          <button
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+            type="submit"
+          >
+            {isLoading ? <Spinner /> : "Create User"}
+          </button>
           <span>
-            Already have an account ? <Link to="/login">Login.</Link>
+            Already have an account ? <Link to="/login">Login</Link>
           </span>
         </form>
       </FormContainer>
